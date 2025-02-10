@@ -36,8 +36,12 @@ local stripLeadingComments(s) =
     'group_right',
 
     // modifiers
-    '@',
+    //'@', // lexOperator handles this
     'offset',
+
+    // aggregation keywords
+    'by',
+    'without',
   ],
   operator: [
     'bool',
@@ -72,7 +76,7 @@ local stripLeadingComments(s) =
       if std.member(self.operator, std.asciiLower(value))
       then ['OPERATOR', value]
       else if std.member(self.infnan, std.asciiLower(value))
-      then ['INFNAN', value]
+      then ['NUMBER', value]
       else if std.member(self.keyword, std.asciiLower(value))
       then ['KEYWORD', value]
       else if value != ''
@@ -238,6 +242,9 @@ local stripLeadingComments(s) =
     local infunc(s) =
       if s != '' && std.member(ops, s[0])
       then [s[0]]
+           + (if std.length(s) > 2
+              then infunc(s[1:])
+              else [])
       else [];
     local q = std.join('', infunc(str));
 
