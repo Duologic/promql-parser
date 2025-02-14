@@ -1,0 +1,16 @@
+Original:
+
+abs(
+  avg(limit_ratio(0.5, http_requests_total{namespace="abc"}))
+  -
+  avg(limit_ratio(-0.5, http_requests_total{status="true"}))
+) <= bool stddev(http_requests_total{namespace="abc"})
+
+
+Without namespace label:
+
+abs(avg(limit_ratio(0.5, http_requests_total{}))
+ -
+avg(limit_ratio(-0.5, http_requests_total{`status`=`true`})))
+ <= bool
+stddev(http_requests_total{})
