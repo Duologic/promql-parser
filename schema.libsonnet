@@ -127,20 +127,16 @@
       },
       required: ['operator', 'lhs', 'rhs'],
       toString(obj)::
-        std.join(' ', std.prune([
-          root.objectToString(obj.lhs)
-          + (if 'vector_matching' in obj
-             then '\n'
-             else ''),
-          root.objectToString(obj.operator),
-          (if std.get(obj, 'bool', false)
-           then 'bool'
-           else null),
-          (if 'vector_matching' in obj
-           then root.objectToString(obj.vector_matching) + '\n'
-           else null),
-          root.objectToString(obj.rhs),
-        ])),
+        root.objectToString(obj.lhs)
+        + '\n '
+        + std.toString(obj.operator)
+        + (if std.get(obj, 'bool', false)
+           then ' bool'
+           else '')
+        + (if 'vector_matching' in obj
+           then ' ' + root.objectToString(obj.vector_matching)
+           else '')
+        + '\n' + root.objectToString(obj.rhs),
     },
     vector_matching: {
       type: 'object',
