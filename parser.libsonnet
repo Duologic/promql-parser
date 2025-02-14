@@ -63,8 +63,8 @@ local lexer = import './lexer.libsonnet';
         then self.parseUnary(index, endTokens)
         else if std.member(['NUMBER', 'HEX'], token[0])
         then self.parseNumber(index, endTokens)
-        else if token[0] == 'TIME'
-        then self.parseTime(index, endTokens)
+        else if token[0] == 'DURATION'
+        then self.parseDuration(index, endTokens)
         else if token[1] == '{'
         then self.parseSelector(index, endTokens)
         else error 'Unexpected token: "%s"' % std.toString(token);
@@ -101,8 +101,8 @@ local lexer = import './lexer.libsonnet';
       local tokenValue = token[1];
       {
         type: 'vector_selector',
-        vector_selector:: tokenValue,
         name: tokenValue,
+        vector_selector:: tokenValue,  // used to get the value in parseStringOrId()
         cursor:: index + 1,
       },
 
@@ -125,7 +125,7 @@ local lexer = import './lexer.libsonnet';
       local token = lexicon[index];
       assert std.member(unaryoperators, token[1]) : 'Not a unary operator: ' + std.toString(token);
       local expr = self.parseExpr(index + 1, endTokens);
-      assert std.member(['number', 'time'], expr.type) : "Unexpected type '%s' after unary operator" % expr.type;
+      assert std.member(['number', 'duration'], expr.type) : "Unexpected type '%s' after unary operator" % expr.type;
       {
         type: expr.type,
         [expr.type]: token[1] + expr[expr.type],
@@ -141,12 +141,12 @@ local lexer = import './lexer.libsonnet';
         cursor:: index + 1,
       },
 
-    parseTime(index, endTokens):
+    parseDuration(index, endTokens):
       local token = lexicon[index];
       local tokenValue = token[1];
       {
-        type: 'time',
-        time: tokenValue,
+        type: 'duration',
+        duration: tokenValue,
         cursor:: index + 1,
       },
 
@@ -230,7 +230,7 @@ local lexer = import './lexer.libsonnet';
       local rightExpr = self.parseExpr(vectorMatcherCursor, endTokens);
       {
         type: 'binary',
-        op: operator,
+        operator: operator,
         [if isBool then 'bool']: isBool,
         [if vectorMatching != null then 'vector_matching']: vectorMatching,
         lhs: leftExpr,
@@ -324,7 +324,7 @@ local lexer = import './lexer.libsonnet';
     parseRange(obj, endTokens):
       local endToken = ']';
       local expr = self.parseExpr(obj.cursor + 1, [endToken]);
-      local expectedTypes = ['number', 'time'];
+      local expectedTypes = ['number', 'duration'];
       assert std.member(expectedTypes, expr.type) : expmsg(expectedTypes, expr.type);
       assert lexicon[expr.cursor][1] == endToken : expmsg(endToken, lexicon[expr.cursor]);
       obj
@@ -339,7 +339,7 @@ local lexer = import './lexer.libsonnet';
       assert tokenValue == 'offset' : expmsg('offset', tokenValue);
 
       local value = self.parseExpr(obj.cursor + 1, endTokens + ['@']);
-      local expectedTypes = ['number', 'time'];
+      local expectedTypes = ['number', 'duration'];
       assert std.member(expectedTypes, value.type) : expmsg(expectedTypes, value.type);
 
       assert obj.type == 'vector_selector' : expmsg('vector_selector', obj);
@@ -357,7 +357,7 @@ local lexer = import './lexer.libsonnet';
       assert tokenValue == '@' : expmsg('@', tokenValue);
 
       local value = self.parseExpr(obj.cursor + 1, endTokens + ['offset']);
-      local expectedTypes = ['number', 'time', 'functioncall'];
+      local expectedTypes = ['number', 'duration', 'functioncall'];
       assert std.member(expectedTypes, value.type) : expmsg(expectedTypes, value.type);
       assert
         (if value.type == 'functioncall'
@@ -382,7 +382,7 @@ local lexer = import './lexer.libsonnet';
       assert std.member(expectedOperators, operator) : expmsg(std.join('","', expectedOperators), lexicon[key.cursor]);
       local expr = self.parseString(key.cursor + 1, endTokens);
       {
-        type:: 'label_matcher',
+        type: 'label_matcher',
         key: key.value,
         value: expr.string,
         operator: operator,

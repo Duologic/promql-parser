@@ -54,7 +54,7 @@ local stripLeadingComments(s) =
     'nan',
     'inf',
   ],
-  time: [
+  duration: [
     'ms',
     's',
     'm',
@@ -166,14 +166,14 @@ local stripLeadingComments(s) =
 
         else leadingZeros + decimal(std.length(leadingZeros));
 
-      local time =
+      local duration =
         local unit =
           std.filter(
             function(x)
               std.startsWith(str[std.length(value):], x),
-            self.time
+            self.duration
           );
-        if std.length(std.findSubstr('.', value)) == 0  // Time units cannot be combined with a floating point.
+        if std.length(std.findSubstr('.', value)) == 0  // Duration units cannot be combined with a floating point.
            && std.length(unit) > 0
         then
           local lex = self.lexNumber(str[std.length(value) + std.length(unit[0]):]);
@@ -191,8 +191,8 @@ local stripLeadingComments(s) =
 
       if std.startsWith(value, '0x')
       then ['HEX', value]
-      else if time != value
-      then ['TIME', time]
+      else if duration != value
+      then ['DURATION', duration]
       else if value != ''
       then ['NUMBER', value]
       else [],
