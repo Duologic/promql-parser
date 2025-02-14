@@ -52,8 +52,8 @@ local lexer = import './lexer.libsonnet';
 
     parseExpr(index, endTokens):
       local token = lexicon[index];
-      assert std.trace(std.manifestJson(index), true);
-      assert std.trace(std.manifestJson(token), true);
+      //assert std.trace(std.manifestJson(index), true);
+      //assert std.trace(std.manifestJson(token), true);
       local expr =
         if token[0] == 'IDENTIFIER'
         then self.parseIdentifier(index, endTokens)
@@ -498,8 +498,6 @@ local lexer = import './lexer.libsonnet';
         if token[0] == 'IDENTIFIER'
         then self.parseIdentifier(index, endTokens)
         else self.parseString(index, endTokens);
-      assert std.trace(std.manifestJson(expr), true);
-      assert std.trace(std.manifestJson(endTokens), true);
       {
         value: expr[expr.type],
         cursor:: expr.cursor,
