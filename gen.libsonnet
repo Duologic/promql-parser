@@ -227,14 +227,18 @@ local astschema = import './schema.libsonnet',
     },
   parenthesis+:
     {
-      '#new': { 'function': { args: [{ default: null, enums: null, name: 'expr', type: 'string' }], help: '' } },
+      '#new': { 'function': { args: [{ default: null, enums: null, name: 'expr', type: 'object' }], help: '' } },
       new(expr):
         self.withType()
         + withToStringFunction()
         + self.withExpr(expr),
-      '#withExpr': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['string'] }], help: '' } },
+      '#withExpr': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['object'] }], help: '' } },
       withExpr(value): {
         expr: value,
+      },
+      '#withExprMixin': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['object'] }], help: '' } },
+      withExprMixin(value): {
+        expr+: value,
       },
       '#withType': { 'function': { args: [], help: '' } },
       withType(): {
@@ -255,6 +259,96 @@ local astschema = import './schema.libsonnet',
       '#withType': { 'function': { args: [], help: '' } },
       withType(): {
         type: 'string',
+      },
+    },
+  subquery+:
+    {
+      '#new': { 'function': { args: [{ default: null, enums: null, name: 'expr', type: 'object' }, { default: null, enums: null, name: 'range', type: ['string', 'string'] }], help: '' } },
+      new(expr, range):
+        self.withType()
+        + withToStringFunction()
+        + self.withExpr(expr)
+        + self.withRange(range),
+      '#withExpr': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['object'] }], help: '' } },
+      withExpr(value): {
+        expr: value,
+      },
+      '#withExprMixin': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['object'] }], help: '' } },
+      withExprMixin(value): {
+        expr+: value,
+      },
+      '#withOffset': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['string', 'string'] }], help: '' } },
+      withOffset(value): {
+        offset: value,
+      },
+      '#withOffsetMixin': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['string', 'string'] }], help: '' } },
+      withOffsetMixin(value): {
+        offset+: value,
+      },
+      offset+:
+        {
+          '#withNumber': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['string'] }], help: '' } },
+          withNumber(value): {
+            offset+: {
+              number: value,
+            },
+          },
+          '#withDuration': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['string'] }], help: '' } },
+          withDuration(value): {
+            offset+: {
+              duration: value,
+            },
+          },
+        },
+      '#withRange': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['string', 'string'] }], help: '' } },
+      withRange(value): {
+        range: value,
+      },
+      '#withRangeMixin': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['string', 'string'] }], help: '' } },
+      withRangeMixin(value): {
+        range+: value,
+      },
+      range+:
+        {
+          '#withNumber': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['string'] }], help: '' } },
+          withNumber(value): {
+            range+: {
+              number: value,
+            },
+          },
+          '#withDuration': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['string'] }], help: '' } },
+          withDuration(value): {
+            range+: {
+              duration: value,
+            },
+          },
+        },
+      '#withResolution': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['string', 'string'] }], help: '' } },
+      withResolution(value): {
+        resolution: value,
+      },
+      '#withResolutionMixin': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['string', 'string'] }], help: '' } },
+      withResolutionMixin(value): {
+        resolution+: value,
+      },
+      resolution+:
+        {
+          '#withNumber': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['string'] }], help: '' } },
+          withNumber(value): {
+            resolution+: {
+              number: value,
+            },
+          },
+          '#withDuration': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['string'] }], help: '' } },
+          withDuration(value): {
+            resolution+: {
+              duration: value,
+            },
+          },
+        },
+      '#withType': { 'function': { args: [], help: '' } },
+      withType(): {
+        type: 'subquery',
       },
     },
   variable+:

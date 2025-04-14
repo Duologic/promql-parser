@@ -66,6 +66,7 @@ local stripLeadingComments(s) =
 
   lexIdentifier(str):
     if xtd.ascii.isNumber(str[0])
+       || str[0] == ':'
     then []
     else
       local aux(index=0, return='') =
@@ -233,7 +234,7 @@ local stripLeadingComments(s) =
     [tokenName[startChar], startChar + value + lastChar],
 
   lexSymbol(str):
-    local symbols = ['{', '}', '[', ']', ',', '(', ')', '$'];
+    local symbols = ['{', '}', '[', ']', ',', '(', ')', '$', ':'];
     if std.member(symbols, str[0])
     then ['SYMBOL', str[0]]
     else [],

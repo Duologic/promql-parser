@@ -355,15 +355,54 @@ local lexer = import './lexer.libsonnet';
 
     parseRange(obj, endTokens):
       local endToken = ']';
-      local expr = self.parseExpr(obj.cursor + 1, [endToken]);
+      local expr = self.parseExpr(obj.cursor + 1, [endToken, ':']);
       local expectedTypes = ['number', 'duration', 'variable'];
       assert std.member(expectedTypes, expr.type) : expmsg(expectedTypes, expr.type);
-      assert lexicon[expr.cursor][1] == endToken : expmsg(endToken, lexicon[expr.cursor]);
-      obj
-      + {
-        range: expr,
-        cursor:: expr.cursor + 1,
-      },
+
+      local next = lexicon[expr.cursor][1];
+      local subquery = next == ':';
+
+      local resolution =
+        if subquery
+           && lexicon[expr.cursor + 1][1] == endToken
+        then { cursor:: expr.cursor + 1 }
+        else if subquery
+        then
+          local resolutionExpr = self.parseExpr(expr.cursor + 1, [endToken]);
+          local expectedTypes = ['duration', 'variable'];
+          assert std.member(expectedTypes, resolutionExpr.type) : expmsg(expectedTypes, resolutionExpr.type);
+          resolutionExpr
+        else expr;
+
+      local cursor = resolution.cursor;
+      assert lexicon[cursor][1] == endToken : expmsg(endToken, lexicon[cursor]);
+
+      local offset =
+        if std.length(lexicon) > cursor + 1
+           && lexicon[cursor + 1][1] == 'offset'
+        then
+          local offsetExpr = self.parseExpr(resolution.cursor + 2, endTokens);
+          local expectedTypes = ['duration', 'variable'];
+          assert std.member(expectedTypes, offsetExpr.type) : expmsg(expectedTypes, offsetExpr.type);
+          offsetExpr
+        else { cursor:: cursor + 1 };
+
+      (
+        if subquery
+        then {
+          type: 'subquery',
+          expr: obj,
+          range: expr,
+          [if resolution != {} then 'resolution']: resolution,
+          [if offset != {} then 'offset']: offset,
+          cursor:: offset.cursor,
+        }
+        else
+          obj + {
+            range: expr,
+            cursor:: cursor + 1,
+          }
+      ),
 
     parseOffsetModifier(obj, endTokens):
       local token = lexicon[obj.cursor];

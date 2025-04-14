@@ -79,6 +79,12 @@ local queries =
     |||,
     'ab{${servers:regex},a="b"}[$__rate_interval]',
     '(ab{${servers:regex},a="b"}[$__rate_interval])',
+    'min_over_time( rate(http_requests_total[5m])[30m:] )',
+    'min_over_time( rate(http_requests_total[5m])[30m:1m] )',
+    'min_over_time( rate(http_requests_total[5m])[30m:] offset 6m )',
+    'min_over_time( rate(http_requests_total[5m])[30m:1m] offset 8h)',
+    'rate(http_requests_total[5m])[30m:1m] offset 8h',
+    'rate(http_requests_total[5m])[30m:1m]',
   ];
 
 local parser = import './parser.libsonnet';

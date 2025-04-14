@@ -17,7 +17,7 @@
       type: 'object',
       properties: {
         type: { const: 'parenthesis' },
-        expr: { type: 'string' },
+        expr: { type: 'object' },
       },
       required: ['expr'],
       toString(obj)::
@@ -101,6 +101,44 @@
            then '@ %s' % root.objectToString(obj.timestamp)
            else if 'start_end' in obj
            then '@ %s' % root.objectToString(obj.start_end)
+           else ''),
+    },
+    subquery: {
+      type: 'object',
+      properties: {
+        type: { const: 'subquery' },
+        expr: { type: 'object' },
+        range: {
+          oneOf: [
+            { '$ref': '#/$defs/number' },
+            { '$ref': '#/$defs/duration' },
+          ],
+        },
+        resolution: {
+          oneOf: [
+            { '$ref': '#/$defs/number' },
+            { '$ref': '#/$defs/duration' },
+          ],
+        },
+        offset: {
+          oneOf: [
+            { '$ref': '#/$defs/number' },
+            { '$ref': '#/$defs/duration' },
+          ],
+        },
+      },
+      required: ['expr', 'range'],
+      toString(obj)::
+        root.objectToString(obj.expr)
+        + '['
+        + root.objectToString(obj.range)
+        + ':'
+        + (if 'resolution' in obj
+           then root.objectToString(obj.resolution)
+           else '')
+        + ']'
+        + (if 'offset' in obj
+           then ' offset %s ' % root.objectToString(obj.offset)
            else ''),
     },
     label_matcher: {
