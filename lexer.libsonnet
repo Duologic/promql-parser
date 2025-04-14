@@ -232,7 +232,7 @@ local stripLeadingComments(s) =
     [tokenName[startChar], startChar + value + lastChar],
 
   lexSymbol(str):
-    local symbols = ['{', '}', '[', ']', ',', '(', ')'];
+    local symbols = ['{', '}', '[', ']', ',', '(', ')', '$'];
     if std.member(symbols, str[0])
     then ['SYMBOL', str[0]]
     else [],

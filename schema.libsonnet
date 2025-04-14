@@ -33,6 +33,16 @@
       toString(obj)::
         std.toString(obj.duration),
     },
+    variable: {
+      type: 'object',
+      properties: {
+        type: { const: 'variable' },
+        variable: { type: 'string' },
+      },
+      required: ['variable'],
+      toString(obj)::
+        '${%s}' % obj.variable,
+    },
     vector_selector: {
       type: 'object',
       properties: {

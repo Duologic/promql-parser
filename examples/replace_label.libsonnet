@@ -6,7 +6,7 @@ local xtd = import 'github.com/jsonnet-libs/xtd/main.libsonnet';
   query:
     |||
       abs(
-        avg(limit_ratio(0.5, http_requests_total{namespace="abc"}))
+        avg(limit_ratio(0.5, http_requests_total{${var}, namespace="abc"}))
         -
         avg(limit_ratio(-0.5, http_requests_total{status="true"}))
       ) <= bool stddev(http_requests_total{namespace="abc"})
@@ -22,7 +22,7 @@ local xtd = import 'github.com/jsonnet-libs/xtd/main.libsonnet';
         matchers: [
           label
           for label in selector.matchers
-          if label.key != 'namespace'
+          if std.get(label, 'key') != 'namespace'
         ],
       }
     else selector,

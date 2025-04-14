@@ -241,6 +241,22 @@ local astschema = import './schema.libsonnet',
         type: 'string',
       },
     },
+  variable+:
+    {
+      '#new': { 'function': { args: [{ default: null, enums: null, name: 'variable', type: 'string' }], help: '' } },
+      new(variable):
+        self.withType()
+        + withToStringFunction()
+        + self.withVariable(variable),
+      '#withType': { 'function': { args: [], help: '' } },
+      withType(): {
+        type: 'variable',
+      },
+      '#withVariable': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['string'] }], help: '' } },
+      withVariable(value): {
+        variable: value,
+      },
+    },
   vector_matching+:
     {
       '#new': { 'function': { args: [{ default: null, enums: ['on', 'ignoring'], name: 'vector_matching', type: 'string' }, { default: null, enums: null, name: 'matching_labels', type: 'array' }], help: '' } },

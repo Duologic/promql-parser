@@ -368,26 +368,48 @@ local lexer = import './lexer.libsonnet';
 
       assert !std.objectHas(obj, 'timestamp') : '@ <timestamp> may not be set multiple times';
 
-      obj
-      + {
+      obj +
+      {
         [if value.type != 'functioncall' then 'timestamp']+: value,
         [if value.type == 'functioncall' then 'start_end']: value.func,
         cursor:: value.cursor,
       },
 
-    local parseLabelMatcher(index, endTokens) =
-      local expectedOperators = ['=', '!=', '=~', '!~'];
-      local key = parseStringOrId(index, expectedOperators);
-      local operator = lexicon[key.cursor][1];
-      assert std.member(expectedOperators, operator) : expmsg(std.join('","', expectedOperators), lexicon[key.cursor]);
-      local expr = self.parseString(key.cursor + 1, endTokens);
+    local parseVariable(index, endTokens) =
+      local next = lexicon[index + 1][1];
+
+      local variable =
+        if next == '{'
+        then lexicon[index + 2][1]
+        else next;
+
+      local cursor =
+        if next == '{'
+        then index + 4
+        else index + 2;
       {
-        type: 'label_matcher',
-        key: key.value,
-        value: expr.string,
-        operator: operator,
-        cursor:: expr.cursor,
+        type: 'variable',
+        variable: variable,
+        cursor:: cursor,
       },
+
+    local parseLabelMatcher(index, endTokens) =
+      if lexicon[index][1] == '$'
+      then parseVariable(index, endTokens)
+      else
+        local expectedOperators = ['=', '!=', '=~', '!~'];
+        local key = parseStringOrId(index, expectedOperators);
+        local operator = lexicon[key.cursor][1];
+        assert std.member(expectedOperators, operator) : expmsg(std.join('","', expectedOperators), lexicon[key.cursor]);
+        local expr = self.parseString(key.cursor + 1, endTokens);
+
+        {
+          type: 'label_matcher',
+          key: key.value,
+          value: expr.string,
+          operator: operator,
+          cursor:: expr.cursor,
+        },
 
     local parseVectorMatching(index, endTokens) =
       local keywords = ['on', 'ignoring'];
