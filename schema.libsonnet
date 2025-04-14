@@ -21,7 +21,7 @@
       },
       required: ['expr'],
       toString(obj)::
-        '(\n%s\n)' % obj.expr,
+        '(\n%s\n)' % root.objectToString(obj.expr),
     },
     string: {
       type: 'object',
