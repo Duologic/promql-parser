@@ -168,7 +168,7 @@
       },
       required: ['vector_matching', 'matching_labels'],
       toString(obj)::
-        std.toString(obj.keyword)
+        std.toString(obj.vector_matching)
         + '('
         + std.join(', ', obj.matching_labels)
         + ')'
