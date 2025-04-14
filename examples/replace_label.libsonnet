@@ -1,5 +1,6 @@
 local parser = import '../parser.libsonnet';
 local promqlschema = import '../schema.libsonnet';
+local xtd = import 'github.com/jsonnet-libs/xtd/main.libsonnet';
 
 {
   query:
@@ -12,13 +13,6 @@ local promqlschema = import '../schema.libsonnet';
     |||,
 
   parsed:: parser.new(self.query).parse(),
-
-  local deepMap(func, x) =
-    if std.isObject(x)
-    then std.mapWithKey(function(_, y) deepMap(func, func(y)), func(x))
-    else if std.isArray(x)
-    then std.map(function(y) deepMap(func, func(y)), x)
-    else func(x),
 
   local removeNamespaceLabel(selector) =
     if std.isObject(selector) && std.get(selector, 'type', '') == 'vector_selector'
@@ -35,7 +29,7 @@ local promqlschema = import '../schema.libsonnet';
 
   removed:
     promqlschema.objectToString(
-      deepMap(
+      xtd.inspect.deepMap(
         removeNamespaceLabel,
         self.parsed,
       ),
