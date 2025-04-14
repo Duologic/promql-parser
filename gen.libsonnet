@@ -225,6 +225,22 @@ local astschema = import './schema.libsonnet',
         type: 'number',
       },
     },
+  parenthesis+:
+    {
+      '#new': { 'function': { args: [{ default: null, enums: null, name: 'expr', type: 'string' }], help: '' } },
+      new(expr):
+        self.withType()
+        + withToStringFunction()
+        + self.withExpr(expr),
+      '#withExpr': { 'function': { args: [{ default: null, enums: null, name: 'value', type: ['string'] }], help: '' } },
+      withExpr(value): {
+        expr: value,
+      },
+      '#withType': { 'function': { args: [], help: '' } },
+      withType(): {
+        type: 'parenthesis',
+      },
+    },
   string+:
     {
       '#new': { 'function': { args: [{ default: null, enums: null, name: 'string', type: 'string' }], help: '' } },

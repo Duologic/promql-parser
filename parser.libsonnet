@@ -69,6 +69,8 @@ local lexer = import './lexer.libsonnet';
         then self.parseSelector(index, endTokens)
         else if token[1] == '$'
         then self.parseVariable(index, endTokens)
+        else if token[1] == '('
+        then self.parseParenthesis(index, endTokens)
         else error 'Unexpected token: "%s"' % std.toString(token);
 
       local parseRemainder(obj) =
@@ -116,6 +118,15 @@ local lexer = import './lexer.libsonnet';
         cursor:: cursor,
       },
 
+    parseParenthesis(index, endTokens):
+      assert lexicon[index][1] == '(' : expmsg('(', lexicon[index]);
+      local expr = self.parseExpr(index + 1, [')']);
+      assert lexicon[expr.cursor][1] == ')' : expmsg(')', lexicon[expr.cursor]);
+      {
+        type: 'parenthesis',
+        expr: expr,
+        cursor:: expr.cursor + 1,
+      },
 
     parseIdentifier(index, endTokens):
       local token = lexicon[index];

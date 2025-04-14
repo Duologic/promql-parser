@@ -3,6 +3,26 @@
   objectToString(obj):: root['$defs'][obj.type].toString(obj),
 
   '$defs': {
+    variable: {
+      type: 'object',
+      properties: {
+        type: { const: 'variable' },
+        variable: { type: 'string' },
+      },
+      required: ['variable'],
+      toString(obj)::
+        '$%s' % obj.variable,
+    },
+    parenthesis: {
+      type: 'object',
+      properties: {
+        type: { const: 'parenthesis' },
+        expr: { type: 'string' },
+      },
+      required: ['expr'],
+      toString(obj)::
+        '(\n%s\n)' % obj.expr,
+    },
     string: {
       type: 'object',
       properties: {
@@ -32,16 +52,6 @@
       required: ['duration'],
       toString(obj)::
         std.toString(obj.duration),
-    },
-    variable: {
-      type: 'object',
-      properties: {
-        type: { const: 'variable' },
-        variable: { type: 'string' },
-      },
-      required: ['variable'],
-      toString(obj)::
-        '$%s' % obj.variable,
     },
     vector_selector: {
       type: 'object',
