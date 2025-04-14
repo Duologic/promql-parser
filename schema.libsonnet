@@ -41,7 +41,7 @@
       },
       required: ['variable'],
       toString(obj)::
-        '${%s}' % obj.variable,
+        '$%s' % obj.variable,
     },
     vector_selector: {
       type: 'object',

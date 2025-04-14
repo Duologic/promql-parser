@@ -71,7 +71,7 @@ local queries =
         avg(limit_ratio(-0.5, http_requests_total))
       ) <= bool stddev(http_requests_total)
     |||,
-    'ab{${servers:regex},a="b"}',
+    'ab{${servers:regex},a="b"}[$__rate_interval]',
   ];
 
 local parser = import './parser.libsonnet';

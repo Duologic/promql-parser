@@ -67,6 +67,8 @@ local lexer = import './lexer.libsonnet';
         then self.parseDuration(index, endTokens)
         else if token[1] == '{'
         then self.parseSelector(index, endTokens)
+        else if token[1] == '$'
+        then self.parseVariable(index, endTokens)
         else error 'Unexpected token: "%s"' % std.toString(token);
 
       local parseRemainder(obj) =
@@ -95,6 +97,25 @@ local lexer = import './lexer.libsonnet';
           parseRemainder(expr + { location:: lexicon[obj.cursor][2] });
 
       parseRemainder(expr + { location:: lexicon[index][2] }),
+
+    parseVariable(index, endTokens):
+      local next = lexicon[index + 1][1];
+
+      local variable =
+        if next == '{'
+        then '{%s}' % lexicon[index + 2][1]
+        else next;
+
+      local cursor =
+        if next == '{'
+        then index + 4
+        else index + 2;
+      {
+        type: 'variable',
+        variable: variable,
+        cursor:: cursor,
+      },
+
 
     parseIdentifier(index, endTokens):
       local token = lexicon[index];
@@ -324,7 +345,7 @@ local lexer = import './lexer.libsonnet';
     parseRange(obj, endTokens):
       local endToken = ']';
       local expr = self.parseExpr(obj.cursor + 1, [endToken]);
-      local expectedTypes = ['number', 'duration'];
+      local expectedTypes = ['number', 'duration', 'variable'];
       assert std.member(expectedTypes, expr.type) : expmsg(expectedTypes, expr.type);
       assert lexicon[expr.cursor][1] == endToken : expmsg(endToken, lexicon[expr.cursor]);
       obj
@@ -375,27 +396,9 @@ local lexer = import './lexer.libsonnet';
         cursor:: value.cursor,
       },
 
-    local parseVariable(index, endTokens) =
-      local next = lexicon[index + 1][1];
-
-      local variable =
-        if next == '{'
-        then lexicon[index + 2][1]
-        else next;
-
-      local cursor =
-        if next == '{'
-        then index + 4
-        else index + 2;
-      {
-        type: 'variable',
-        variable: variable,
-        cursor:: cursor,
-      },
-
     local parseLabelMatcher(index, endTokens) =
       if lexicon[index][1] == '$'
-      then parseVariable(index, endTokens)
+      then self.parseVariable(index, endTokens)
       else
         local expectedOperators = ['=', '!=', '=~', '!~'];
         local key = parseStringOrId(index, expectedOperators);
