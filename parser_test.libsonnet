@@ -85,6 +85,10 @@ local queries =
     'min_over_time( rate(http_requests_total[5m])[30m:1m] offset 8h)',
     'rate(http_requests_total[5m])[30m:1m] offset 8h',
     'rate(http_requests_total[5m])[30m:1m]',
+    'http_requests_total{} and random{}',
+    'http_requests_total{} AND random{}',
+    'http_requests_total{} unless random{}',
+    'http_requests_total{} oR random{}',
   ];
 
 local parser = import './parser.libsonnet';

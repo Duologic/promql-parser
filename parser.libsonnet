@@ -235,14 +235,14 @@ local lexer = import './lexer.libsonnet';
       local leftExpr = expr;
 
       local operator = lexicon[index][1];
-      assert std.member(validoperators, operator) : 'Not a binary operator: ' + lexicon[index];
+      assert std.member(validoperators, std.asciiLower(operator)) : 'Not a binary operator: ' + lexicon[index];
 
       local isBool =
         if lexicon[index + 1][1] == 'bool'
         then true
         else false;
 
-      assert !isBool || std.member(compoperators, operator) : 'bool modifier can only be used on comparison operators';
+      assert !isBool || std.member(compoperators, std.asciiLower(operator)) : 'bool modifier can only be used on comparison operators';
 
       local nextIndex =
         if isBool
