@@ -305,7 +305,7 @@ local lexer = import './lexer.libsonnet';
       assert std.member(hasParam, operator) || std.length(parameters.args) == 1 : 'wrong number of arguments for aggregate expression provided, expected 1, got 2';
       assert !std.member(hasParam, operator) || std.length(parameters.args) == 2 : 'wrong number of arguments for aggregate expression provided, expected 2, got 1';
 
-      local param = parameters.args[0:-1];
+      local param = parameters.args[0:std.length(parameters.args) - 1];
       local expr = parameters.args[std.length(parameters.args) - 1];
       {
         type: 'aggregate',
