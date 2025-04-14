@@ -158,6 +158,7 @@ local stripLeadingComments(s) =
         then leadingZeros[1:] + decimal(std.length(leadingZeros) - 1)
 
         else if std.length(leadingZeros) == 1
+                && std.length(str) > std.length(leadingZeros)
                 && std.member(['x', 'X'], str[std.length(leadingZeros)])
         then leadingZeros + str[std.length(leadingZeros)] + hexadecimal(std.length(leadingZeros) + 1)
 
